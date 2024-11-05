@@ -2,6 +2,9 @@
 
 Este projeto é um script em Python que detecta pontos faciais usando o MediaPipe, calcula os valores EAR (Eye Aspect Ratio) e MAR (Mouth Aspect Ratio) e reproduz sons de pássaros aleatoriamente. A aplicação utiliza o OpenCV para manipulação da câmera e o Pygame para reprodução de áudio.
 
+
+
+Feito por Henrique Serafin
 ## Funcionalidades
 
 - **Detecção de Pontos Faciais**: Detecta posições dos olhos e boca usando o FaceMesh do MediaPipe.
