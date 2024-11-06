@@ -83,24 +83,24 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Verifica se é hora de tocar um novo áudio
-        tempo_atual = time.time()
-        if tempo_atual - ultimo_tempo_audio >= 10:
-            audio_aleatorio = random.choice(audio_files)
-            try:
-                pygame.mixer.music.load(audio_aleatorio)
-                pygame.mixer.music.play()
-                ultimo_tempo_audio = tempo_atual
-                nome_audio = audio_nomes.get(audio_aleatorio, "desconhecido")  # Obtém o nome descritivo do dicionário
-            except pygame.error as e:
-                print(f"Erro ao carregar o áudio {audio_aleatorio}: {e}")
+
 
         if saida_facemesh.multi_face_landmarks:
             print("Rosto detectado")
+            tempo_atual = time.time()
+            if tempo_atual - ultimo_tempo_audio >= 10 and som_tocando == False:
+                audio_aleatorio = random.choice(audio_files)
+                try:
+                    pygame.mixer.music.load(audio_aleatorio)
+                    pygame.mixer.music.play()
+                    ultimo_tempo_audio = tempo_atual
+                    nome_audio = audio_nomes.get(audio_aleatorio, "desconhecido")  # Obtém o nome descritivo do dicionário
+                except pygame.error as e:
+                    print(f"Erro ao carregar o áudio {audio_aleatorio}: {e}")
         else:
             print("Nenhum rosto detectado")
-            if som_tocando:
-                pygame.mixer.music.stop()  # Para o som
-                som_tocando = False  # Atualiza o estado para som parado
+            pygame.mixer.music.stop()  # Para o som
+            som_tocando = False  # Atualiza o estado para som parado
 
         try:
             for face_landmarks in saida_facemesh.multi_face_landmarks:
@@ -139,6 +139,9 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
                 cv2.putText(frame, f"MAR: {round(mar, 2)} { 'abertos' if mar >= mar_limiar else  'fechados '}", (1, 50),
                             cv2.FONT_HERSHEY_DUPLEX,
                             0.9, (255, 255, 255), 2)
+                cv2.putText(frame, f"MAR: {round(mar, 2)} { 'abertos' if mar >= mar_limiar else  'fechados '}", (1, 50),
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            0.9, (255, 255, 255), 2)
 
                 # Verificação da limiar
                 if ear < ear_limiar:
@@ -169,4 +172,4 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
             break
 
 cap.release()
-cv2.destroyAllWindows()
+cv2.destroyAllWindows() 
