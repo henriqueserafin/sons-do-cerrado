@@ -22,8 +22,6 @@ audio_nomes = {
     "seriema.mp3": "seriema"
 }
 
-audio_boca_aberta = "sossego.mp3"  
-
 # Pontos dos olhos e boca
 p_olho_esq = [385, 380, 387, 373, 362, 263]
 p_olho_dir = [160, 144, 158, 153, 33, 133]
@@ -70,7 +68,6 @@ mp_face_mesh = mp.solutions.face_mesh
 # Estado do som
 som_tocando = False
 ultimo_tempo_audio = time.time()
-boca_aberta_audio_tocando = False 
 
 with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5) as facemesh:
     while cap.isOpened():
@@ -146,6 +143,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
                             cv2.FONT_HERSHEY_DUPLEX,
                             0.9, (255, 255, 255), 2)
 
+                # Verificação da limiar
                 if ear < ear_limiar:
                     t_inicial = time.time() if dormindo == 0 else t_inicial
                     dormindo = 1
@@ -153,30 +151,15 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
                     dormindo = 0
                 t_final = time.time()
 
-                tempo_fechado = (t_final - t_inicial) if dormindo == 1 else 0.0
-                cv2.putText(frame, f"Tempo: {round(tempo_fechado, 3)}", (1, 80),
+                tempo = (t_final - t_inicial) if dormindo == 1 else 0.0
+                cv2.putText(frame, f"Tempo: {round(tempo, 3)}", (1, 80),
                             cv2.FONT_HERSHEY_DUPLEX,
                             0.9, (255, 255, 255), 2)
-                if tempo_fechado >= 1.5:
+                if tempo >= 1.5:
                     cv2.rectangle(frame, (30, 400), (610, 452), (109, 233, 219), -1)
-                    cv2.putText(frame, "Muito tempo com olhos fechados!", (80, 435),
-                                cv2.FONT_HERSHEY_DUPLEX, 0.85, (58, 58, 55), 1)
-                    
-################################################################################################################################################################
-
-
-                # Toca o áudio específico e exibe "Boca aberta" se a boca estiver aberta
-                if mar >= mar_limiar:
-                    cv2.putText(frame, "Boca aberta", (50, 200),
-                                cv2.FONT_HERSHEY_DUPLEX, 1.2, (0, 0, 255), 2)
-                    if not boca_aberta_audio_tocando:
-                        pygame.mixer.music.load(audio_boca_aberta)  # Toca o áudio específico para boca aberta
-                        pygame.mixer.music.play()
-                        boca_aberta_audio_tocando = True
-                elif mar < mar_limiar:
-                    if boca_aberta_audio_tocando:
-                        pygame.mixer.music.stop()
-                        boca_aberta_audio_tocando = False
+                    cv2.putText(frame, f"Muito tempo com olhos fechados!", (80, 435),
+                                cv2.FONT_HERSHEY_DUPLEX,
+                                0.85, (58, 58, 55), 1)
 
         except Exception as e:
             print("Erro:", e)
